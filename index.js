@@ -99,4 +99,125 @@ app.get('/dashboard', checkToken, (req, res) => {
   });
 });
 
+const users = [
+  {
+    name: "Jhon",
+    role: 'admin',
+    id: 1,
+  },
+  {
+    name: "Tom",
+    role: 'operator',
+    id: 2,
+  },
+  {
+    name: "Fred",
+    role: 'user',
+    id: 3,
+  },
+  {
+    name: "Jhon",
+    role: 'user',
+    id: 4,
+  },
+  {
+    name: "Tom",
+    role: 'admin',
+    id: 5,
+  },
+  {
+    name: "Karl",
+    role: 'user',
+    id: 6,
+  },
+  {
+    name: "Tiny",
+    role: 'user',
+    id: 7,
+  },
+  {
+    name: "Sara",
+    role: 'admin',
+    id: 8,
+  },
+  {
+    name: "Liza",
+    role: 'user',
+    id: 9,
+  },
+  {
+    name: "Kim",
+    role: 'admin',
+    id: 10,
+  },
+  {
+    name: "Jery",
+    role: 'admin',
+    id: 11,
+  },
+  {
+    name: "Key",
+    role: 'operator',
+    id: 12,
+  },
+];
+
+app.get('/users/list', checkToken, (req, res) => {
+  const start = (req.query.page - 1) * 10;
+  
+  res.send({
+    totalCount: users.length,
+    list: users.slice(start, start + 10),
+  });
+});
+
+app.get('/users/item/:id', checkToken, (req, res) => {
+  const user = users.filter(user => +user.id === +req.params.id)[0];
+  
+  if (user) return res.send(user);
+  
+  res.status(404);
+  
+  res.send({
+    message: "user not found"
+  });
+});
+
+app.post('/users/item', checkToken, (req, res) => {
+  const index = users.findIndex(user => +user.id === +req.body.id);
+  
+  if (index !== -1) {
+    users[index] = req.body;
+  
+  } else {
+    users.push({
+      ...req.body,
+      id: users[users.length - 1].id + 1
+    });
+  }
+  
+  res.send({
+    message: "success"
+  });
+});
+
+app.delete('/users/item/:id', checkToken, (req, res) => {
+  const index = users.findIndex(user => +user.id === +req.params.id);
+  
+  if (index !== -1) {
+    users.splice(index, 1);
+    
+     res.send({
+      message: "success"
+    });
+    return
+  }
+  
+  res.status(404);
+  
+  res.send({
+    message: "user not found"
+  });
+});
+
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
